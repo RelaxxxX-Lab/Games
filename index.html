@@ -10,25 +10,25 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212; /* Preto */
-            color: #ffffff; /* Branco */
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* White text */
         }
         h1, h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: #bb86fc; /* Roxo */
+            color: #bb86fc; /* Purple accent */
         }
         .container {
             max-width: 600px;
             margin: 50px auto;
-            background: #1e1e1e; /* Preto escuro */
+            background: #1e1e1e; /* Darker background for containers */
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
         input[type="text"], input[type="password"] {
             width: calc(100% - 20px);
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             border: none;
             border-radius: 8px;
@@ -38,8 +38,8 @@
         }
         .button {
             display: inline-block;
-            background: #bb86fc; /* Roxo */
-            color: #121212; /* Preto */
+            background: #bb86fc; /* Purple */
+            color: #121212; /* Dark text for contrast */
             padding: 12px 20px;
             border: none;
             border-radius: 8px;
@@ -47,24 +47,31 @@
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
         }
         .button:hover {
-            background: #9c67db; /* Roxo mais escuro */
+            background: #9c67db; /* Slightly darker purple */
         }
-        ul {
-            list-style: none;
-            padding: 0;
+        .hidden {
+            display: none;
         }
-        li {
-            background: #2c2c2c; /* Fundo dos blocos */
+        .log-item {
+            background: #2c2c2c; /* Dark background for logs */
             margin: 10px 0;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .hidden {
-            display: none;
+        .log-item .name {
+            font-weight: bold;
+            color: #bb86fc; /* Highlighted purple for names */
+        }
+        .log-item .reason {
+            font-size: 14px;
+            color: #cccccc; /* Slightly lighter gray for reasons */
         }
         .center {
             text-align: center;
@@ -84,7 +91,7 @@
 
     <div class="container hidden" id="games-container">
         <h2>Jogos Infectados</h2>
-        <ul id="infected-games-list"></ul>
+        <div id="infected-games-list"></div>
         <div class="center">
             <button class="button" id="logout-button">Sair</button>
         </div>
@@ -133,9 +140,20 @@
         function loadGames() {
             gamesList.innerHTML = '';
             infectedGames.forEach(game => {
-                const li = document.createElement('li');
-                li.textContent = `${game.name} - ${game.reason}`;
-                gamesList.appendChild(li);
+                const logItem = document.createElement('div');
+                logItem.classList.add('log-item');
+
+                const name = document.createElement('span');
+                name.classList.add('name');
+                name.textContent = game.name;
+
+                const reason = document.createElement('span');
+                reason.classList.add('reason');
+                reason.textContent = game.reason;
+
+                logItem.appendChild(name);
+                logItem.appendChild(reason);
+                gamesList.appendChild(logItem);
             });
         }
     </script>
