@@ -1,132 +1,124 @@
--- SERVIDOR-SIDE DO ROBLOX: LOGIN E MONITOR DE JOGOS INFECTADOS
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Server Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #eee;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h1>Login</h1>
+        <input type="text" id="username" placeholder="Usuário">
+        <input type="password" id="password" placeholder="Senha">
+        <button class="button" id="login-button">Entrar</button>
+    </div>
 
--- 🛠️ Configuração inicial
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    <div class="container hidden" id="games-container">
+        <h2>Jogos Infectados</h2>
+        <ul id="infected-games-list"></ul>
+        <button class="button" id="logout-button">Sair</button>
+    </div>
 
--- 🗝️ Usuários fixos para login (Sem DataStore)
-local UserDatabase = {
-    ["Admin"] = "1234", -- Usuário: Senha
-    ["TestUser"] = "abcd"
-}
+    <script>
+        // Simulação de banco de dados
+        const users = {
+            "Admin": "1234",
+            "TestUser": "abcd"
+        };
 
--- 📋 Lista de jogos infectados
-local InfectedGames = {
-    {Name = "Jogo A", Reason = "Script malicioso detectado"},
-    {Name = "Jogo B", Reason = "Exploit via backdoor"},
-}
+        const infectedGames = [
+            { name: "Jogo A", reason: "Script malicioso detectado" },
+            { name: "Jogo B", reason: "Exploit via backdoor" }
+        ];
 
--- ✨ Eventos remotos para comunicação cliente-servidor
-local RemoteFolder = Instance.new("Folder", ReplicatedStorage)
-RemoteFolder.Name = "RemoteEvents"
+        // Elementos DOM
+        const loginContainer = document.getElementById('login-container');
+        const gamesContainer = document.getElementById('games-container');
+        const loginButton = document.getElementById('login-button');
+        const logoutButton = document.getElementById('logout-button');
+        const gamesList = document.getElementById('infected-games-list');
 
-local LoginEvent = Instance.new("RemoteFunction", RemoteFolder)
-LoginEvent.Name = "LoginEvent"
+        // Login
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-local GetInfectedGamesEvent = Instance.new("RemoteFunction", RemoteFolder)
-GetInfectedGamesEvent.Name = "GetInfectedGamesEvent"
+            if (users[username] && users[username] === password) {
+                loginContainer.classList.add('hidden');
+                gamesContainer.classList.remove('hidden');
+                loadGames();
+            } else {
+                alert("Usuário ou senha inválidos!");
+            }
+        });
 
--- 🛡️ Sessões temporárias (Login ativo)
-local ActiveSessions = {}
+        // Logout
+        logoutButton.addEventListener('click', () => {
+            loginContainer.classList.remove('hidden');
+            gamesContainer.classList.add('hidden');
+        });
 
--- 🔒 Função de autenticação
-local function Authenticate(username, password)
-    if UserDatabase[username] and UserDatabase[username] == password then
-        return true
-    else
-        return false
-    end
-end
-
--- 📤 Responder tentativas de login
-LoginEvent.OnServerInvoke = function(player, username, password)
-    if Authenticate(username, password) then
-        ActiveSessions[player.UserId] = username
-        return true -- Login bem-sucedido
-    else
-        return false -- Falha no login
-    end
-end
-
--- 📋 Fornecer lista de jogos infectados
-GetInfectedGamesEvent.OnServerInvoke = function(player)
-    if ActiveSessions[player.UserId] then
-        return InfectedGames
-    else
-        return nil -- Não autorizado
-    end
-end
-
--- 🌟 Configurando a interface do jogador
-Players.PlayerAdded:Connect(function(player)
-    local PlayerGui = player:WaitForChild("PlayerGui")
-    
-    -- UI Principal
-    local ScreenGui = Instance.new("ScreenGui", PlayerGui)
-    ScreenGui.Name = "MainUI"
-    
-    -- 📃 Tela de Login
-    local LoginFrame = Instance.new("Frame", ScreenGui)
-    LoginFrame.Size = UDim2.new(0.4, 0, 0.3, 0)
-    LoginFrame.Position = UDim2.new(0.3, 0, 0.35, 0)
-    LoginFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-
-    local UsernameBox = Instance.new("TextBox", LoginFrame)
-    UsernameBox.PlaceholderText = "Usuário"
-    UsernameBox.Size = UDim2.new(0.8, 0, 0.2, 0)
-    UsernameBox.Position = UDim2.new(0.1, 0, 0.2, 0)
-    
-    local PasswordBox = Instance.new("TextBox", LoginFrame)
-    PasswordBox.PlaceholderText = "Senha"
-    PasswordBox.Size = UDim2.new(0.8, 0, 0.2, 0)
-    PasswordBox.Position = UDim2.new(0.1, 0, 0.5, 0)
-    PasswordBox.TextScaled = true
-    
-    local LoginButton = Instance.new("TextButton", LoginFrame)
-    LoginButton.Text = "Login"
-    LoginButton.Size = UDim2.new(0.8, 0, 0.2, 0)
-    LoginButton.Position = UDim2.new(0.1, 0, 0.75, 0)
-    LoginButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
-    
-    -- 💾 Tela de Jogos Infectados
-    local InfectedGamesFrame = Instance.new("Frame", ScreenGui)
-    InfectedGamesFrame.Size = UDim2.new(0.6, 0, 0.6, 0)
-    InfectedGamesFrame.Position = UDim2.new(0.2, 0, 0.2, 0)
-    InfectedGamesFrame.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-    InfectedGamesFrame.Visible = false
-    
-    local InfectedGamesTitle = Instance.new("TextLabel", InfectedGamesFrame)
-    InfectedGamesTitle.Text = "Jogos Infectados"
-    InfectedGamesTitle.Size = UDim2.new(1, 0, 0.1, 0)
-    InfectedGamesTitle.TextScaled = true
-    InfectedGamesTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    
-    local GamesList = Instance.new("ScrollingFrame", InfectedGamesFrame)
-    GamesList.Size = UDim2.new(1, 0, 0.9, 0)
-    GamesList.Position = UDim2.new(0, 0, 0.1, 0)
-    GamesList.CanvasSize = UDim2.new(0, 0, 2, 0)
-    
-    -- 🎛️ Conectar botões e eventos
-    LoginButton.MouseButton1Click:Connect(function()
-        local success = LoginEvent:InvokeServer(UsernameBox.Text, PasswordBox.Text)
-        if success then
-            LoginFrame.Visible = false
-            InfectedGamesFrame.Visible = true
-            
-            -- Preencher lista de jogos
-            local games = GetInfectedGamesEvent:InvokeServer()
-            if games then
-                for _, game in pairs(games) do
-                    local GameLabel = Instance.new("TextLabel", GamesList)
-                    GameLabel.Size = UDim2.new(1, 0, 0.1, 0)
-                    GameLabel.Text = game.Name .. " - " .. game.Reason
-                    GameLabel.TextScaled = true
-                end
-            end
-        else
-            warn("Login falhou! Verifique suas credenciais.")
-        end
-    end)
-end)
-
--- 🚀 Pronto! Teste o sistema e ajuste conforme necessário.
+        // Carregar jogos infectados
+        function loadGames() {
+            gamesList.innerHTML = '';
+            infectedGames.forEach(game => {
+                const li = document.createElement('li');
+                li.textContent = `${game.name} - ${game.reason}`;
+                gamesList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
