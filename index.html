@@ -10,37 +10,43 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212; /* Dark background */
-            color: #ffffff; /* White text */
+            background-color: #0d1117; /* Deep dark background */
+            color: #c9d1d9; /* Light text for contrast */
         }
+
         h1, h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: #bb86fc; /* Purple accent */
+            color: #58a6ff; /* Bright blue for headers */
         }
+
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 50px auto;
-            background: #1e1e1e; /* Darker background for containers */
+            background: #161b22; /* Slightly lighter block background */
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+            border: 1px solid #21262d; /* Border for blocks */
         }
+
         input[type="text"], input[type="password"] {
-            width: calc(100% - 20px);
-            padding: 12px;
-            margin: 10px 0;
-            border: none;
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #30363d; /* Subtle border for inputs */
             border-radius: 8px;
-            background-color: #2c2c2c;
-            color: #ffffff;
-            font-size: 14px;
+            background-color: #0d1117; /* Match background */
+            color: #c9d1d9;
+            font-size: 16px;
         }
+
         .button {
             display: inline-block;
-            background: #bb86fc; /* Purple */
-            color: #121212; /* Dark text for contrast */
-            padding: 12px 20px;
+            background: #238636; /* Vibrant green */
+            color: #ffffff;
+            padding: 15px 30px;
+            margin: 10px auto;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -49,32 +55,52 @@
             text-transform: uppercase;
             transition: all 0.3s ease;
         }
+
         .button:hover {
-            background: #9c67db; /* Slightly darker purple */
+            background: #2ea043; /* Slightly brighter green */
         }
+
         .hidden {
             display: none;
         }
+
         .log-item {
-            background: #2c2c2c; /* Dark background for logs */
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            background: #21262d; /* Distinct background for logs */
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid #30363d; /* Define edges */
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .log-item .name {
             font-weight: bold;
-            color: #bb86fc; /* Highlighted purple for names */
+            color: #58a6ff; /* Highlighted blue for names */
         }
+
         .log-item .reason {
             font-size: 14px;
-            color: #cccccc; /* Slightly lighter gray for reasons */
+            color: #8b949e; /* Muted gray for reasons */
         }
+
         .center {
             text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            input[type="text"], input[type="password"] {
+                padding: 12px;
+            }
+            .button {
+                padding: 12px 20px;
+            }
         }
     </style>
 </head>
