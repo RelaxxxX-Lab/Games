@@ -1,0 +1,132 @@
+-- SERVIDOR-SIDE DO ROBLOX: LOGIN E MONITOR DE JOGOS INFECTADOS
+
+-- 🛠️ Configuração inicial
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- 🗝️ Usuários fixos para login (Sem DataStore)
+local UserDatabase = {
+    ["Admin"] = "1234", -- Usuário: Senha
+    ["TestUser"] = "abcd"
+}
+
+-- 📋 Lista de jogos infectados
+local InfectedGames = {
+    {Name = "Jogo A", Reason = "Script malicioso detectado"},
+    {Name = "Jogo B", Reason = "Exploit via backdoor"},
+}
+
+-- ✨ Eventos remotos para comunicação cliente-servidor
+local RemoteFolder = Instance.new("Folder", ReplicatedStorage)
+RemoteFolder.Name = "RemoteEvents"
+
+local LoginEvent = Instance.new("RemoteFunction", RemoteFolder)
+LoginEvent.Name = "LoginEvent"
+
+local GetInfectedGamesEvent = Instance.new("RemoteFunction", RemoteFolder)
+GetInfectedGamesEvent.Name = "GetInfectedGamesEvent"
+
+-- 🛡️ Sessões temporárias (Login ativo)
+local ActiveSessions = {}
+
+-- 🔒 Função de autenticação
+local function Authenticate(username, password)
+    if UserDatabase[username] and UserDatabase[username] == password then
+        return true
+    else
+        return false
+    end
+end
+
+-- 📤 Responder tentativas de login
+LoginEvent.OnServerInvoke = function(player, username, password)
+    if Authenticate(username, password) then
+        ActiveSessions[player.UserId] = username
+        return true -- Login bem-sucedido
+    else
+        return false -- Falha no login
+    end
+end
+
+-- 📋 Fornecer lista de jogos infectados
+GetInfectedGamesEvent.OnServerInvoke = function(player)
+    if ActiveSessions[player.UserId] then
+        return InfectedGames
+    else
+        return nil -- Não autorizado
+    end
+end
+
+-- 🌟 Configurando a interface do jogador
+Players.PlayerAdded:Connect(function(player)
+    local PlayerGui = player:WaitForChild("PlayerGui")
+    
+    -- UI Principal
+    local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+    ScreenGui.Name = "MainUI"
+    
+    -- 📃 Tela de Login
+    local LoginFrame = Instance.new("Frame", ScreenGui)
+    LoginFrame.Size = UDim2.new(0.4, 0, 0.3, 0)
+    LoginFrame.Position = UDim2.new(0.3, 0, 0.35, 0)
+    LoginFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+
+    local UsernameBox = Instance.new("TextBox", LoginFrame)
+    UsernameBox.PlaceholderText = "Usuário"
+    UsernameBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+    UsernameBox.Position = UDim2.new(0.1, 0, 0.2, 0)
+    
+    local PasswordBox = Instance.new("TextBox", LoginFrame)
+    PasswordBox.PlaceholderText = "Senha"
+    PasswordBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+    PasswordBox.Position = UDim2.new(0.1, 0, 0.5, 0)
+    PasswordBox.TextScaled = true
+    
+    local LoginButton = Instance.new("TextButton", LoginFrame)
+    LoginButton.Text = "Login"
+    LoginButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+    LoginButton.Position = UDim2.new(0.1, 0, 0.75, 0)
+    LoginButton.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+    
+    -- 💾 Tela de Jogos Infectados
+    local InfectedGamesFrame = Instance.new("Frame", ScreenGui)
+    InfectedGamesFrame.Size = UDim2.new(0.6, 0, 0.6, 0)
+    InfectedGamesFrame.Position = UDim2.new(0.2, 0, 0.2, 0)
+    InfectedGamesFrame.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    InfectedGamesFrame.Visible = false
+    
+    local InfectedGamesTitle = Instance.new("TextLabel", InfectedGamesFrame)
+    InfectedGamesTitle.Text = "Jogos Infectados"
+    InfectedGamesTitle.Size = UDim2.new(1, 0, 0.1, 0)
+    InfectedGamesTitle.TextScaled = true
+    InfectedGamesTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    
+    local GamesList = Instance.new("ScrollingFrame", InfectedGamesFrame)
+    GamesList.Size = UDim2.new(1, 0, 0.9, 0)
+    GamesList.Position = UDim2.new(0, 0, 0.1, 0)
+    GamesList.CanvasSize = UDim2.new(0, 0, 2, 0)
+    
+    -- 🎛️ Conectar botões e eventos
+    LoginButton.MouseButton1Click:Connect(function()
+        local success = LoginEvent:InvokeServer(UsernameBox.Text, PasswordBox.Text)
+        if success then
+            LoginFrame.Visible = false
+            InfectedGamesFrame.Visible = true
+            
+            -- Preencher lista de jogos
+            local games = GetInfectedGamesEvent:InvokeServer()
+            if games then
+                for _, game in pairs(games) do
+                    local GameLabel = Instance.new("TextLabel", GamesList)
+                    GameLabel.Size = UDim2.new(1, 0, 0.1, 0)
+                    GameLabel.Text = game.Name .. " - " .. game.Reason
+                    GameLabel.TextScaled = true
+                end
+            end
+        else
+            warn("Login falhou! Verifique suas credenciais.")
+        end
+    end)
+end)
+
+-- 🚀 Pronto! Teste o sistema e ajuste conforme necessário.
