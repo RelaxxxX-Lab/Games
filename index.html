@@ -5,70 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roblox Server Monitor</title>
     <style>
+        /* Global Styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #121212; /* Preto */
+            color: #ffffff; /* Branco */
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #bb86fc; /* Roxo */
         }
         .container {
             max-width: 600px;
             margin: 50px auto;
-            background: #fff;
+            background: #1e1e1e; /* Preto escuro */
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            text-align: center;
-            color: #333;
-        }
-        .hidden {
-            display: none;
-        }
-        .button {
-            display: inline-block;
-            background: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .button:hover {
-            background: #45a049;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
         input[type="text"], input[type="password"] {
             width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: none;
+            border-radius: 8px;
+            background-color: #2c2c2c;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            background: #bb86fc; /* Roxo */
+            color: #121212; /* Preto */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background 0.3s ease;
+        }
+        .button:hover {
+            background: #9c67db; /* Roxo mais escuro */
         }
         ul {
             list-style: none;
             padding: 0;
         }
         li {
-            background: #eee;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
+            background: #2c2c2c; /* Fundo dos blocos */
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .hidden {
+            display: none;
+        }
+        .center {
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container" id="login-container">
-        <h1>Login</h1>
+        <h1>Monitor de Servidor Roblox</h1>
+        <h2>Login</h2>
         <input type="text" id="username" placeholder="Usuário">
         <input type="password" id="password" placeholder="Senha">
-        <button class="button" id="login-button">Entrar</button>
+        <div class="center">
+            <button class="button" id="login-button">Entrar</button>
+        </div>
     </div>
 
     <div class="container hidden" id="games-container">
         <h2>Jogos Infectados</h2>
         <ul id="infected-games-list"></ul>
-        <button class="button" id="logout-button">Sair</button>
+        <div class="center">
+            <button class="button" id="logout-button">Sair</button>
+        </div>
     </div>
 
     <script>
